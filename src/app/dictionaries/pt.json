@@ -1,0 +1,9 @@
+{
+  "error": "Algo deu errado :/ Tentar novamente?",
+  "mintSuccess": "Cunhado!",
+  "notEligible": "Você cunhou o Genesis em 2020?",
+  "footer": "LENS MINT V3.",
+  "mint": "CUNHAR",
+  "connect": "Conectar",
+  "transactionHash": "Hash da Transação:"
+}

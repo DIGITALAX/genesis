@@ -1,0 +1,9 @@
+{
+  "error": "Something went wrong :/ Try again?",
+  "mintSuccess": "Minted!",
+  "notEligible": "Did you mint Genesis in 2020?",
+  "footer": "LENS MINT V3.",
+  "mint": "MINT",
+  "connect": "Connect",
+  "transactionHash": "Transaction Hash:"
+}

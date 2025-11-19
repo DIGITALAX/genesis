@@ -1,0 +1,9 @@
+{
+  "error": "Algo salió mal :/ ¿Intentar de nuevo?",
+  "mintSuccess": "¡Acuñado!",
+  "notEligible": "¿Acuñaste Genesis en 2020?",
+  "footer": "LENS MINT V3.",
+  "mint": "ACUÑAR",
+  "connect": "Conectar",
+  "transactionHash": "Hash de Transacción:"
+}
