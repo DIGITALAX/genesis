@@ -7,7 +7,7 @@ export const Success = ({ dict }: { dict: any }) => {
   if (!context?.successData) return null;
 
   const explorerUrl = context?.successData?.txHash
-    ? `https://explore.lens.xyz/tx/${context?.successData.txHash}`
+    ? `https://explorer.lens.xyz/tx/${context?.successData.txHash}`
     : null;
 
   return (
