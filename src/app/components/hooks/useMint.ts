@@ -23,7 +23,7 @@ const useMint = (dict: any) => {
     if (!address || !publicClient) return;
     setVerifiedLoading(true);
     try {
-      const [isAuthorized, hasMinted] = await Promise.all([
+      const [isAuthorized, balance] = await Promise.all([
         publicClient.readContract({
           address: GENESIS_CONTRACT,
           abi: GenesisAbi,
@@ -33,14 +33,14 @@ const useMint = (dict: any) => {
         publicClient.readContract({
           address: GENESIS_CONTRACT,
           abi: GenesisAbi,
-          functionName: "hasMinted",
+          functionName: "balanceOf",
           args: [address],
         }),
       ]);
 
       setVerified({
         canMint: isAuthorized as boolean,
-        minted: (hasMinted as boolean) ? 1 : 0,
+        minted: Number(balance),
       });
     } catch (err: any) {
       console.error(err.message);
@@ -49,7 +49,9 @@ const useMint = (dict: any) => {
   };
 
   useEffect(() => {
-    checkAuthorized();
+    if (!verified.canMint && address && publicClient) {
+      checkAuthorized();
+    }
   }, [address, publicClient]);
 
   const handleMint = async () => {
