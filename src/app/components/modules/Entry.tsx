@@ -7,18 +7,34 @@ import { useAccount } from "wagmi";
 import { AiOutlineLoading } from "react-icons/ai";
 
 const Entry: FunctionComponent<{ dict: any }> = ({ dict }): JSX.Element => {
-  const { mintLoading, handleMint } = useMint(dict);
+  const { mintLoading, verifiedLoading, verified, handleMint } = useMint(dict);
   const { address, isConnected } = useAccount();
   return (
     <div className="relative w-full h-full min-h-screen flex flex-col justify-between">
       <Header dict={dict} />
-      <div className="flex w-full h-full relative items-center justify-center">
+      <div className="flex w-full h-full relative flex-col gap-3 items-center justify-center">
+        {isConnected && !verifiedLoading && (
+          <div className="relative text-white text-sm">
+            {verified?.minted > 0
+              ? dict?.alreadyMinted
+              : verified?.canMint
+              ? dict?.eligible
+              : dict?.notEligible}
+          </div>
+        )}
         <button
-          disabled={!isConnected || !address || mintLoading}
+          disabled={
+            !isConnected ||
+            !address ||
+            mintLoading ||
+            verifiedLoading ||
+            !verified?.canMint ||
+            verified?.minted > 0
+          }
           className="relative w-24 h-fit px-3 py-2 rounded-sm bg-green-400 text-pink-600 text-center items-center justify-center flex mix-blend-color-dodge"
           onClick={() => handleMint()}
         >
-          {mintLoading ? (
+          {mintLoading || verifiedLoading ? (
             <AiOutlineLoading className="animate-spin" size={20} />
           ) : (
             dict?.mint

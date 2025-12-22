@@ -1,6 +1,8 @@
+import { GENESIS_CONTRACT } from "@/app/lib/constants";
 import { ModalContext } from "@/app/providers";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import GenesisAbi from "./../../abis/GenesisNFT.json";
 
 const useMint = (dict: any) => {
   const { address } = useAccount();
@@ -8,6 +10,7 @@ const useMint = (dict: any) => {
   const context = useContext(ModalContext);
   const { data: walletClient } = useWalletClient();
   const [mintLoading, setMintLoading] = useState<boolean>(false);
+  const [verifiedLoading, setVerifiedLoading] = useState<boolean>(false);
   const [verified, setVerified] = useState<{
     minted: number;
     canMint: boolean;
@@ -15,6 +18,39 @@ const useMint = (dict: any) => {
     minted: 0,
     canMint: false,
   });
+
+  const checkAuthorized = async () => {
+    if (!address || !publicClient) return;
+    setVerifiedLoading(true);
+    try {
+      const [isAuthorized, hasMinted] = await Promise.all([
+        publicClient.readContract({
+          address: GENESIS_CONTRACT,
+          abi: GenesisAbi,
+          functionName: "isAuthorizedMinter",
+          args: [address],
+        }),
+        publicClient.readContract({
+          address: GENESIS_CONTRACT,
+          abi: GenesisAbi,
+          functionName: "hasMinted",
+          args: [address],
+        }),
+      ]);
+
+      setVerified({
+        canMint: isAuthorized as boolean,
+        minted: (hasMinted as boolean) ? 1 : 0,
+      });
+    } catch (err: any) {
+      console.error(err.message);
+    }
+    setVerifiedLoading(false);
+  };
+
+  useEffect(() => {
+    checkAuthorized();
+  }, [address, publicClient]);
 
   const handleMint = async () => {
     if (
@@ -31,16 +67,8 @@ const useMint = (dict: any) => {
     setMintLoading(true);
     try {
       const hash = await walletClient.writeContract({
-        address: "0xE69dAB02100d3989bCA736a0FE1239CbFcf2cE01",
-        abi: [
-          {
-            type: "function",
-            name: "mint",
-            inputs: [],
-            outputs: [],
-            stateMutability: "nonpayable",
-          },
-        ],
+        address: GENESIS_CONTRACT,
+        abi: GenesisAbi,
         functionName: "mint",
         args: [],
         account: address,
@@ -60,6 +88,8 @@ const useMint = (dict: any) => {
 
   return {
     mintLoading,
+    verifiedLoading,
+    verified,
     handleMint,
   };
 };
