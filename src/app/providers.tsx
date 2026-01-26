@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider } from "connectkit";
 import { createContext, useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
-import { metaMask } from "wagmi/connectors";
+import { injected } from "wagmi/connectors";
 import { ErrorData, SuccessData } from "./components/types/common.types";
 
 const queryClient = new QueryClient();
@@ -23,7 +23,13 @@ export const ModalContext = createContext<
 
 export const config = createConfig({
   chains: [chains.mainnet],
-  connectors: [metaMask()],
+  connectors: [
+    injected({
+      // Only allow MetaMask injected provider.
+      target: "metaMask",
+      shimDisconnect: true,
+    }),
+  ],
   transports: {
     [chains.mainnet.id]: http(),
   },
@@ -54,6 +60,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider
+          options={{ enforceSupportedChains: false }}
           customTheme={{
             "--ck-font-family": '"Nerd Semi", cursive',
           }}
